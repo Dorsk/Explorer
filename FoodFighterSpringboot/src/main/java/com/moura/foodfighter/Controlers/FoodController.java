@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/foods")
+@RequestMapping("/api/food")
 public class FoodController {
 
     @Autowired
@@ -41,16 +41,6 @@ public class FoodController {
                     food.setLat(foodDetails.getLat());
                     food.setLon(foodDetails.getLon());
                     return ResponseEntity.ok(foodRepository.save(food));
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFood(@PathVariable Long id) {
-        return foodRepository.findById(id)
-                .map(food -> {
-                    foodRepository.delete(food);
-                    return ResponseEntity.noContent().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
