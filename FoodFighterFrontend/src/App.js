@@ -8,7 +8,31 @@ class App extends Component {
     super(props);
     this.state = {
       markerPosition: { lat: 0, lng: 0 },
+      food: null,
+      id: 1,
     };
+  }
+
+  componentDidMount() {
+    this.fetchFood();
+  }
+
+  async fetchFood() {
+    let url = "http://localhost:8080/api/food/" + this.state.id;
+
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        this.setState({ food: data });
+      } else {
+        console.error("Failed to fetch food");
+        this.setState({ loading: false });
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      this.setState({ loading: false });
+    }
   }
 
   handleMapClick = (event) => {
