@@ -1,21 +1,14 @@
 import React, { Component } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  Polyline,
-} from "@react-google-maps/api";
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import "./App.css";
 import imgagefood from "./img/cassoulet.png";
 
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       markerPosition: { lat: 0, lng: 0 },
       map: null,
-      marker: null,
       food: {
         id: 0,
         name: "",
@@ -63,53 +56,26 @@ class App extends Component {
 
   updateMarker = () => {
     const { map, markerPosition, marker } = this.state;
-    if (map && window.google && window.google.maps.marker) {
+    if (map && window.google) {
       if (marker) {
         marker.position = markerPosition;
       } else {
-        const AdvancedMarkerElement =
-          window.google.maps.marker.AdvancedMarkerElement;
-        if (AdvancedMarkerElement) {
-          const newMarker = new AdvancedMarkerElement({
-            position: markerPosition,
-            map: map,
-          });
-          this.setState({ marker: newMarker });
-        } else {
-          console.error(
-            "AdvancedMarkerElement is not available in this version of the Google Maps API."
-          );
-        }
+        const { AdvancedMarkerElement } = window.google.maps.marker;
+        const newMarker = new AdvancedMarkerElement({
+          position: markerPosition,
+          map: map,
+        });
+        this.setState({ marker: newMarker });
       }
     }
   };
 
   handleValidateClick = () => {
     const { markerPosition } = this.state;
-
-    // Créer le marker Reponse + la distance avec
-    /*const reel = { lat: this.state.food.lat, lng: this.state.food.lon };
-    const AdvancedMarkerElementReel =
-      window.google.maps.marker.AdvancedMarkerElement;
-    if (AdvancedMarkerElementReel) {
-      const newMarkerReel = new AdvancedMarkerElementReel({
-        position: reel,
-        map: this.state.map,
-      });
-    }
-    // trace la ligne entre les 2 markers
-    var line = new Polyline({
-      path: [this.state.marker, reel],
-      map: this.state.map,
-    });*/
-    // popup d'alerte
-    alert(
-      `Latitude: ${markerPosition.lat} | ReelLat : ${this.state.food.lat}, Lng: ${markerPosition.lng} | reelLng: ${this.state.food.lon} \n`
-    );
+    alert(`Latitude: ${markerPosition.lat}, Longitude: ${markerPosition.lng}`);
   };
 
   render() {
-    const { markerPosition } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -139,19 +105,15 @@ class App extends Component {
                   zoom={2}
                   onClick={this.handleMapClick}
                   onLoad={this.onLoad}
-                  center={{
-                    lat: this.state.markerPosition.lat,
-                    lng: this.state.markerPosition.lng,
-                  }}
-                >
-                  {markerPosition && <Marker position={markerPosition} />}
-                </GoogleMap>
+                ></GoogleMap>
               </LoadScript>
             </div>
             <div className="info-panel">
               {this.state.food.name}
               <img src={imgagefood} alt="Description" />
-              <p>{this.state.food.description}</p>
+              <p>
+                <ul>{this.state.food.description}</ul>
+              </p>
               <p>
                 Latitude : <br />
                 {this.state.markerPosition.lat}
