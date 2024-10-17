@@ -5,6 +5,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 
 @Entity
 @Table(name = "food")
@@ -16,7 +17,9 @@ public class Food {
     private String name;
     private String description;
     private Double lat;
-    private Double lon;
+    private Double lng;
+
+    private byte[] image;
 
     // Getters and Setters
 
@@ -52,11 +55,20 @@ public class Food {
         this.lat = lat;
     }
 
-    public Double getLon() {
-        return lon;
+    public Double getLng() {
+        return lng;
     }
 
-    public void setLon(Double lon) {
-        this.lon = lon;
+    public void setLng(Double lon) {
+        this.lng = lon;
     }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
 }

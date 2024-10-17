@@ -5,15 +5,16 @@ const AddFood = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [lat, setLat] = useState("");
-  const [lon, setLon] = useState("");
+  const [lng, setLng] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const food = { name, description, lat, lon };
+    const food = { name, description, lat, lng, image };
 
     try {
-      const response = await fetch("http://localhost:8080/api/foods", {
+      const response = await fetch("http://localhost:8080/api/food", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +28,8 @@ const AddFood = () => {
         setName("");
         setDescription("");
         setLat("");
-        setLon("");
+        setLng("");
+        setImage(null);
       } else {
         alert("Failed to add food.");
       }
@@ -50,8 +52,10 @@ const AddFood = () => {
       </div>
       <div>
         <label>Description:</label>
-        <input
+        <textarea
           type="text"
+          rows="4"
+          cols="50"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
@@ -70,8 +74,16 @@ const AddFood = () => {
         <label>Longitude:</label>
         <input
           type="number"
-          value={lon}
-          onChange={(e) => setLon(e.target.value)}
+          value={lng}
+          onChange={(e) => setLng(e.target.value)}
+          required
+        />
+      </div>
+      <div>
+        <label>Image:</label>
+        <input
+          type="file"
+          onChange={(e) => setImage(e.target.files[0])}
           required
         />
       </div>

@@ -40,7 +40,8 @@ public class FoodController {
                     food.setName(foodDetails.getName());
                     food.setDescription(foodDetails.getDescription());
                     food.setLat(foodDetails.getLat());
-                    food.setLon(foodDetails.getLon());
+                    food.setLng(foodDetails.getLng());
+                    food.setImage(foodDetails.getImage());
                     return ResponseEntity.ok(foodRepository.save(food));
                 })
                 .orElse(ResponseEntity.notFound().build());
