@@ -18,7 +18,7 @@ public class Food {
     private String description;
     private Double lat;
     private Double lng;
-
+    @Lob
     private byte[] image;
 
     // Getters and Setters
