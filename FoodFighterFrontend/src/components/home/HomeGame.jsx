@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useRef } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -10,7 +10,6 @@ import "../../App.css";
 class HomeGame extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       markerPosition: { lat: 0, lng: 0 },
       map: null,
@@ -66,26 +65,26 @@ class HomeGame extends Component {
     if (map && window.google && window.google.maps.marker) {
       if (marker) {
         marker.position = markerPosition;
+      }
+      const AdvancedMarkerElement =
+        window.google.maps.marker.AdvancedMarkerElement;
+      if (AdvancedMarkerElement) {
+        const newMarker = new AdvancedMarkerElement({
+          position: marker.position,
+          map: map,
+        });
+        newMarker.setMap(map);
+        this.setState({ marker: newMarker });
       } else {
-        const AdvancedMarkerElement =
-          window.google.maps.marker.AdvancedMarkerElement;
-        if (AdvancedMarkerElement) {
-          const newMarker = new AdvancedMarkerElement({
-            position: markerPosition,
-            map: map,
-          });
-          this.setState({ marker: newMarker });
-        } else {
-          console.error(
-            "AdvancedMarkerElement is not available in this version of the Google Maps API."
-          );
-        }
+        console.error(
+          "AdvancedMarkerElement is not available in this version of the Google Maps API."
+        );
       }
     }
   };
 
   handleValidateClick = () => {
-    const { markerPosition } = this.state;
+    const { markerPosition, marker, map } = this.state;
 
     // Créer le marker Reponse + la distance avec
     const reel = { lat: this.state.food.lat, lng: this.state.food.lng };
@@ -94,17 +93,57 @@ class HomeGame extends Component {
     const coord2points = [markerPosition, reel];
     const line = new window.google.maps.Polyline({
       path: coord2points,
-      map: this.state.map,
+      map: map,
       strokeColor: "#FF0000",
       strokeOpacity: 1.0,
-      strokeWeight: 2,
+      strokeWeight: 6,
+      icons: [
+        {
+          icon: { path: window.google.maps.SymbolPath.FORWARD_CLOSED_ARROW },
+          offset: "100%",
+        },
+      ],
     });
-    line.setMap(this.state.map);
+    line.setMap(map);
     // popup d'alerte
-    alert(
-      `Latitude: ${markerPosition.lat} | ReelLat : ${this.state.food.lat}, Lng: ${markerPosition.lng} | reelLng: ${this.state.food.lng} \n`
-    );
+    const nwMKreel = new window.google.maps.Marker({
+      position: reel,
+      map: this.state.map,
+    });
+    const currentMKreel = new window.google.maps.Marker({
+      position: this.state.markerPosition,
+      map: this.state.map,
+    });
+    var distance = this.haversine_distance(currentMKreel, nwMKreel);
+    alert(`Distance : ${distance * 1.60934} km \n`);
+
+    // Next game
+    this.setState({ id: this.state.id + 1 });
+    this.fetchFood();
   };
+
+  // distance entre 2 marker
+  haversine_distance(mk1, mk2) {
+    var R = 3958.8; // Radius of the Earth in miles
+    var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    var rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+    var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+
+    var d =
+      2 *
+      R *
+      Math.asin(
+        Math.sqrt(
+          Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+            Math.cos(rlat1) *
+              Math.cos(rlat2) *
+              Math.sin(difflon / 2) *
+              Math.sin(difflon / 2)
+        )
+      );
+    return d;
+  }
 
   render() {
     const { markerPosition } = this.state;
