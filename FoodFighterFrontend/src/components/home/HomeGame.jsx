@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import {
   GoogleMap,
   LoadScript,
-  Marker,
   Polyline,
+  PinElement,
 } from "@react-google-maps/api";
 import "../../App.css";
 
@@ -88,23 +88,21 @@ class HomeGame extends Component {
     const { markerPosition } = this.state;
 
     // Créer le marker Reponse + la distance avec
-    /*const reel = { lat: this.state.food.lat, lng: this.state.food.lon };
-        const AdvancedMarkerElementReel =
-          window.google.maps.marker.AdvancedMarkerElement;
-        if (AdvancedMarkerElementReel) {
-          const newMarkerReel = new AdvancedMarkerElementReel({
-            position: reel,
-            map: this.state.map,
-          });
-        }
-        // trace la ligne entre les 2 markers
-        var line = new Polyline({
-          path: [this.state.marker, reel],
-          map: this.state.map,
-        });*/
+    const reel = { lat: this.state.food.lat, lng: this.state.food.lng };
+
+    // trace la ligne entre les 2 markers
+    const coord2points = [markerPosition, reel];
+    const line = new window.google.maps.Polyline({
+      path: coord2points,
+      map: this.state.map,
+      strokeColor: "#FF0000",
+      strokeOpacity: 1.0,
+      strokeWeight: 2,
+    });
+    line.setMap(this.state.map);
     // popup d'alerte
     alert(
-      `Latitude: ${markerPosition.lat} | ReelLat : ${this.state.food.lat}, Lng: ${markerPosition.lng} | reelLng: ${this.state.food.lon} \n`
+      `Latitude: ${markerPosition.lat} | ReelLat : ${this.state.food.lat}, Lng: ${markerPosition.lng} | reelLng: ${this.state.food.lng} \n`
     );
   };
 
@@ -125,7 +123,12 @@ class HomeGame extends Component {
                   lng: this.state.markerPosition.lng,
                 }}
               >
-                {markerPosition && <Marker position={markerPosition} />}
+                {markerPosition && (
+                  <gmp-advanced-marker
+                    position={markerPosition}
+                    title="string"
+                  ></gmp-advanced-marker>
+                )}
               </GoogleMap>
             </LoadScript>
           </div>
