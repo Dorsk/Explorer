@@ -1,9 +1,7 @@
-import React, { Component, useRef } from "react";
+import React, { Component} from "react";
 import {
   GoogleMap,
   LoadScript,
-  Polyline,
-  PinElement,
 } from "@react-google-maps/api";
 import "../../App.css";
 
@@ -14,6 +12,9 @@ class HomeGame extends Component {
       markerPosition: { lat: 0, lng: 0 },
       map: null,
       marker: null,
+      polyline: null,
+      markerPolyline : null,
+      markerPolylineEnd : null,
       food: {
         id: 0,
         name: "",
@@ -61,37 +62,45 @@ class HomeGame extends Component {
   };
 
   updateMarker = () => {
-    const { map, markerPosition, marker } = this.state;
+    const { map, markerPosition, marker, markerPolyline } = this.state;
     if (map && window.google && window.google.maps.marker) {
       if (marker) {
         marker.position = markerPosition;
       }
-      const AdvancedMarkerElement =
-        window.google.maps.marker.AdvancedMarkerElement;
-      if (AdvancedMarkerElement) {
-        const newMarker = new AdvancedMarkerElement({
-          position: marker.position,
-          map: map,
-        });
-        newMarker.setMap(map);
-        this.setState({ marker: newMarker });
-      } else {
-        console.error(
-          "AdvancedMarkerElement is not available in this version of the Google Maps API."
-        );
-      }
+      const newMarker = new window.google.maps.Marker({
+        position: marker.position,
+        map: map,
+      });
+      let oldMarker = marker ;
+      let oldMarkerPolyline = markerPolyline ;
+      oldMarker.setMap(null);
+      oldMarkerPolyline.setMap(null);
+      newMarker.setMap(map);
+      this.setState({ marker: newMarker, markerPolyline :oldMarkerPolyline});
     }
   };
 
   handleValidateClick = () => {
-    const { markerPosition, marker, map } = this.state;
+    const { markerPosition, map, polyline, marker, markerPolyline, markerPolylineEnd } = this.state;
 
     // Créer le marker Reponse + la distance avec
     const reel = { lat: this.state.food.lat, lng: this.state.food.lng };
-
+    // remove old polyline and markers
+    let oldPolyline = polyline;
+    let oldMarker = marker;
+    let oldMarkerPolyline = markerPolyline;
+    let oldMarkerPolylineEnd = markerPolylineEnd;
+    if(oldPolyline)
+       oldPolyline.setMap(null);
+    if(oldMarker)
+      oldMarker.setMap(null);
+     if(oldMarkerPolyline)
+      oldMarkerPolyline.setMap(null);
+    if(oldMarkerPolylineEnd)
+      oldMarkerPolylineEnd.setMap(null);
     // trace la ligne entre les 2 markers
     const coord2points = [markerPosition, reel];
-    const line = new window.google.maps.Polyline({
+    const newPolyline = new window.google.maps.Polyline({
       path: coord2points,
       map: map,
       strokeColor: "#FF0000",
@@ -104,9 +113,9 @@ class HomeGame extends Component {
         },
       ],
     });
-    line.setMap(map);
+    newPolyline.setMap(map);
     // popup d'alerte
-    const nwMKreel = new window.google.maps.Marker({
+    const newMarkerPolyline = new window.google.maps.Marker({
       position: reel,
       map: this.state.map,
     });
@@ -114,11 +123,11 @@ class HomeGame extends Component {
       position: this.state.markerPosition,
       map: this.state.map,
     });
-    var distance = this.haversine_distance(currentMKreel, nwMKreel);
+    var distance = this.haversine_distance(currentMKreel, newMarkerPolyline);
     alert(`Distance : ${distance * 1.60934} km \n`);
 
     // Next game
-    this.setState({ id: this.state.id + 1 });
+    this.setState({ id: this.state.id + 1 , polyline: newPolyline, markerPolyline : newMarkerPolyline, markerPolylineEnd : currentMKreel});
     this.fetchFood();
   };
 
