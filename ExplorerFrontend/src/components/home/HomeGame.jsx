@@ -1,8 +1,5 @@
-import React, { Component} from "react";
-import {
-  GoogleMap,
-  LoadScript,
-} from "@react-google-maps/api";
+import React, { Component } from "react";
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import "../../App.css";
 
 class HomeGame extends Component {
@@ -13,9 +10,9 @@ class HomeGame extends Component {
       map: null,
       marker: null,
       polyline: null,
-      markerPolyline : null,
-      markerPolylineEnd : null,
-      food: {
+      markerPolyline: null,
+      markerPolylineEnd: null,
+      location: {
         id: 0,
         name: "",
         lat: 0.0,
@@ -28,19 +25,19 @@ class HomeGame extends Component {
   }
 
   componentDidMount() {
-    this.fetchFood();
+    this.fetchLocation();
   }
 
-  async fetchFood() {
-    let url = "http://localhost:8080/api/food/" + this.state.id;
+  async fetchLocation() {
+    let url = "http://localhost:8080/api/location/" + this.state.id;
 
     try {
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        this.setState({ food: data });
+        this.setState({ location: data });
       } else {
-        console.error("Failed to fetch food");
+        console.error("Failed to fetch location");
         this.setState({ loading: false });
       }
     } catch (error) {
@@ -71,33 +68,36 @@ class HomeGame extends Component {
         position: marker.position,
         map: map,
       });
-      let oldMarker = marker ;
-      let oldMarkerPolyline = markerPolyline ;
+      let oldMarker = marker;
+      let oldMarkerPolyline = markerPolyline;
       oldMarker.setMap(null);
       oldMarkerPolyline.setMap(null);
       newMarker.setMap(map);
-      this.setState({ marker: newMarker, markerPolyline :oldMarkerPolyline});
+      this.setState({ marker: newMarker, markerPolyline: oldMarkerPolyline });
     }
   };
 
   handleValidateClick = () => {
-    const { markerPosition, map, polyline, marker, markerPolyline, markerPolylineEnd } = this.state;
+    const {
+      markerPosition,
+      map,
+      polyline,
+      marker,
+      markerPolyline,
+      markerPolylineEnd,
+    } = this.state;
 
     // Créer le marker Reponse + la distance avec
-    const reel = { lat: this.state.food.lat, lng: this.state.food.lng };
+    const reel = { lat: this.state.location.lat, lng: this.state.location.lng };
     // remove old polyline and markers
     let oldPolyline = polyline;
     let oldMarker = marker;
     let oldMarkerPolyline = markerPolyline;
     let oldMarkerPolylineEnd = markerPolylineEnd;
-    if(oldPolyline)
-       oldPolyline.setMap(null);
-    if(oldMarker)
-      oldMarker.setMap(null);
-     if(oldMarkerPolyline)
-      oldMarkerPolyline.setMap(null);
-    if(oldMarkerPolylineEnd)
-      oldMarkerPolylineEnd.setMap(null);
+    if (oldPolyline) oldPolyline.setMap(null);
+    if (oldMarker) oldMarker.setMap(null);
+    if (oldMarkerPolyline) oldMarkerPolyline.setMap(null);
+    if (oldMarkerPolylineEnd) oldMarkerPolylineEnd.setMap(null);
     // trace la ligne entre les 2 markers
     const coord2points = [markerPosition, reel];
     const newPolyline = new window.google.maps.Polyline({
@@ -127,8 +127,13 @@ class HomeGame extends Component {
     alert(`Distance : ${distance * 1.60934} km \n`);
 
     // Next game
-    this.setState({ id: this.state.id + 1 , polyline: newPolyline, markerPolyline : newMarkerPolyline, markerPolylineEnd : currentMKreel});
-    this.fetchFood();
+    this.setState({
+      id: this.state.id + 1,
+      polyline: newPolyline,
+      markerPolyline: newMarkerPolyline,
+      markerPolylineEnd: currentMKreel,
+    });
+    this.fetchLocation();
   };
 
   // distance entre 2 marker
@@ -181,9 +186,9 @@ class HomeGame extends Component {
             </LoadScript>
           </div>
           <div className="info-panel">
-            {this.state.food.name}
-            <img src={this.state.food.image} alt="Description" />
-            <p>{this.state.food.description}</p>
+            {this.state.location.name}
+            <img src={this.state.location.image} alt="Description" />
+            <p>{this.state.location.description}</p>
             <p>
               Latitude : <br />
               {this.state.markerPosition.lat}

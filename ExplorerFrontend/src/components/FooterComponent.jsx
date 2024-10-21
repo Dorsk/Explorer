@@ -5,7 +5,7 @@ class FooterComponent extends Component {
   render() {
     return (
       <footer>
-        <p>© 2024 Food Fighter. Tous droits réservés par Julien MOURA</p>
+        <p>© 2024 Project Explorer. Tous droits réservés par Julien MOURA</p>
       </footer>
     );
   }

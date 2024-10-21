@@ -1,7 +1,6 @@
-// src/AddFood.js
 import React, { useState } from "react";
 
-const AddFood = () => {
+const AddLocation = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [lat, setLat] = useState("");
@@ -11,19 +10,19 @@ const AddFood = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const food = { name, description, lat, lng, image };
+    const location = { name, description, lat, lng, image };
 
     try {
-      const response = await fetch("http://localhost:8080/api/food", {
+      const response = await fetch("http://localhost:8080/api/location", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(food),
+        body: JSON.stringify(location),
       });
 
       if (response.ok) {
-        alert("Food added successfully!");
+        alert("location added successfully!");
         // Optionally clear the form
         setName("");
         setDescription("");
@@ -31,11 +30,11 @@ const AddFood = () => {
         setLng("");
         setImage(null);
       } else {
-        alert("Failed to add food.");
+        alert("Failed to add location.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred while adding food.");
+      alert("An error occurred while adding location.");
     }
   };
 
@@ -87,9 +86,9 @@ const AddFood = () => {
           required
         />
       </div>
-      <button type="submit">Add Food</button>
+      <button type="submit">Add location</button>
     </form>
   );
 };
 
-export default AddFood;
+export default AddLocation;

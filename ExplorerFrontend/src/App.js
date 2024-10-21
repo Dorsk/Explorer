@@ -3,7 +3,7 @@ import HeaderComponent from "./components/HeaderComponent";
 import NotFound from "./components/NotFoundComponent";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomeGame from "./components/home/HomeGame";
-import AddFoodComponent from "./components/AddFood/AddFoodForm";
+import AddLocationComponent from "./components/AddFood/AddLocationForm";
 import FooterComponent from "./components/FooterComponent";
 
 class App extends Component {
@@ -18,7 +18,11 @@ class App extends Component {
           <HeaderComponent />
           <Routes>
             <Route path="/" exact element={<HomeGame />}></Route>
-            <Route path="/addfood" exact element={<AddFoodComponent />}></Route>
+            <Route
+              path="/addlocation"
+              exact
+              element={<AddLocationComponent />}
+            ></Route>
             <Route element={<NotFound />}></Route>
           </Routes>
           <FooterComponent />

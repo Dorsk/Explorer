@@ -12,7 +12,7 @@ class HeaderComponent extends Component {
                 <a href="/">Explorer</a>
               </li>
               <li>
-                <a href="#about">About</a>
+                <a href="/addlocation">Ajout de données</a>
               </li>
               <li>
                 <a href="#contact">Contact</a>

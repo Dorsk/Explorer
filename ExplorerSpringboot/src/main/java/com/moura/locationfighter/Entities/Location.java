@@ -1,4 +1,4 @@
-package com.moura.foodfighter.Entities;
+package com.moura.locationfighter.Entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -6,10 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.Column;
 
 @Entity
-@Table(name = "food")
-public class Food {
+@Table(name = "location")
+public class Location {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,6 +20,7 @@ public class Food {
     private Double lat;
     private Double lng;
     @Lob
+    @Column(columnDefinition = "BYTEA")
     private byte[] image;
 
     // Getters and Setters
