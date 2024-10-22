@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import { GoogleMap, LoadScript } from "@react-google-maps/api";
 import "../../App.css";
+
+import { GoogleMap, LoadScript } from "@react-google-maps/api";
+import LoadingText from "../tools/LoadingText";
 
 class HomeGame extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      markerPosition: { lat: 0, lng: 0 },
+      loading: true,
+      markerPosition: { lat: 43.604409, lng: 1.4433717 },
       map: null,
       marker: null,
       polyline: null,
@@ -21,6 +24,7 @@ class HomeGame extends Component {
         image: null,
       },
       id: 1,
+      totalKm: 0,
     };
   }
 
@@ -35,13 +39,15 @@ class HomeGame extends Component {
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        this.setState({ location: data });
+        setTimeout(() => {
+          this.setState({ location: data, loading: false });
+        }, 1000);
       } else {
         console.error("Failed to fetch location");
         this.setState({ loading: false });
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetchLocation() :", error);
       this.setState({ loading: false });
     }
   }
@@ -51,32 +57,33 @@ class HomeGame extends Component {
       lat: event.latLng.lat(),
       lng: event.latLng.lng(),
     };
-    this.setState({ markerPosition: position }, this.updateMarker);
+    this.updateMarker(position);
+    this.setState({ markerPosition: position });
   };
 
   onLoad = (map) => {
-    this.setState({ map }, this.updateMarker);
+    this.setState({ map }, this.updateMarker());
   };
 
-  updateMarker = () => {
-    const { map, markerPosition, marker, markerPolyline } = this.state;
-    if (map && window.google && window.google.maps.marker) {
-      if (marker) {
-        marker.position = markerPosition;
-      }
-      const newMarker = new window.google.maps.Marker({
-        position: marker.position,
-        map: map,
-      });
-      let oldMarker = marker;
-      let oldMarkerPolyline = markerPolyline;
-      oldMarker.setMap(null);
-      oldMarkerPolyline.setMap(null);
-      newMarker.setMap(map);
-      this.setState({ marker: newMarker, markerPolyline: oldMarkerPolyline });
-    }
+  updateMarker = (position) => {
+    const { map, marker, markerPolyline } = this.state;
+    const newMarker = new window.google.maps.Marker({
+      position: position,
+      map: map,
+    });
+    let oldMarker = marker;
+    let oldMarkerPolyline = markerPolyline;
+    if (oldMarker) oldMarker.setMap(null);
+    if (oldMarkerPolyline) oldMarkerPolyline.setMap(null);
+    newMarker.setMap(map);
+    this.setState({
+      map: map,
+      marker: newMarker,
+      markerPolyline: oldMarkerPolyline,
+    });
   };
 
+  // Validation du maker et fin de jeu
   handleValidateClick = () => {
     const {
       markerPosition,
@@ -124,15 +131,18 @@ class HomeGame extends Component {
       map: this.state.map,
     });
     var distance = this.haversine_distance(currentMKreel, newMarkerPolyline);
-    alert(`Distance : ${distance * 1.60934} km \n`);
+    alert(`Distance : ${distance} km \n`);
 
-    // Next game
+    // Next game + resultats
+    let distanceKm = +this.state.totalKm + +distance.toFixed(2);
     this.setState({
       id: this.state.id + 1,
       polyline: newPolyline,
       markerPolyline: newMarkerPolyline,
       markerPolylineEnd: currentMKreel,
+      totalKm: distanceKm.toFixed(2),
     });
+    // Todo next game button
     this.fetchLocation();
   };
 
@@ -156,57 +166,72 @@ class HomeGame extends Component {
               Math.sin(difflon / 2)
         )
       );
-    return d;
+    return d * 1.60934; // miles en KM
   }
 
   render() {
-    const { markerPosition } = this.state;
-    return (
-      <main>
-        <div className="content">
-          <div className="map-container">
-            <LoadScript googleMapsApiKey="AIzaSyDGArUEBa5ns09IA7nt7jP-xfNIUkToFts">
-              <GoogleMap
-                mapContainerStyle={{ height: "100%", width: "100%" }}
-                zoom={2}
-                onClick={this.handleMapClick}
-                onLoad={this.onLoad}
-                center={{
-                  lat: this.state.markerPosition.lat,
-                  lng: this.state.markerPosition.lng,
-                }}
+    const { markerPosition, loading } = this.state;
+    if (loading) {
+      return (
+        <main>
+          <LoadingText />
+        </main>
+      );
+    } else {
+      return (
+        <main>
+          <div className="content">
+            <div className="map-container">
+              <LoadScript googleMapsApiKey="AIzaSyDGArUEBa5ns09IA7nt7jP-xfNIUkToFts">
+                <GoogleMap
+                  mapContainerStyle={{ height: "100%", width: "100%" }}
+                  zoom={6}
+                  onClick={this.handleMapClick}
+                  onLoad={this.onLoad}
+                  center={{
+                    lat: this.state.markerPosition.lat,
+                    lng: this.state.markerPosition.lng,
+                  }}
+                >
+                  {markerPosition && (
+                    <gmp-advanced-marker
+                      position={markerPosition}
+                      title="string"
+                    ></gmp-advanced-marker>
+                  )}
+                </GoogleMap>
+              </LoadScript>
+            </div>
+            <div className="info-panel">
+              <p>
+                Partie #{this.state.id}
+                <br />
+                Score : {this.state.totalKm} Km
+              </p>
+              <p>
+                {this.state.location.name}
+                <br />
+                <img src={this.state.location.image} alt="Description" />
+                <br />
+                {this.state.location.description}
+              </p>
+              <p>
+                Latitude : <br />
+                {this.state.markerPosition.lat} <br />
+                Longitude : <br />
+                {this.state.markerPosition.lng}{" "}
+              </p>
+              <button
+                className="buttonValider"
+                onClick={this.handleValidateClick}
               >
-                {markerPosition && (
-                  <gmp-advanced-marker
-                    position={markerPosition}
-                    title="string"
-                  ></gmp-advanced-marker>
-                )}
-              </GoogleMap>
-            </LoadScript>
+                Valider
+              </button>
+            </div>
           </div>
-          <div className="info-panel">
-            {this.state.location.name}
-            <img src={this.state.location.image} alt="Description" />
-            <p>{this.state.location.description}</p>
-            <p>
-              Latitude : <br />
-              {this.state.markerPosition.lat}
-            </p>
-            <p>
-              Longitude : <br />
-              {this.state.markerPosition.lng}{" "}
-            </p>
-            <button
-              className="buttonValider"
-              onClick={this.handleValidateClick}
-            >
-              Valider
-            </button>
-          </div>
-        </div>
-      </main>
-    );
+        </main>
+      );
+    }
   }
 }
 
