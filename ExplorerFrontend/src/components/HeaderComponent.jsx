@@ -9,7 +9,7 @@ class HeaderComponent extends Component {
           <nav>
             <ul>
               <li>
-                <a href="/">Explorer</a>
+                <a href="/game">Explorer</a>
               </li>
               <li>
                 <a href="/addlocation">Ajout de données</a>
@@ -18,7 +18,7 @@ class HeaderComponent extends Component {
                 <a href="#contact">Contact</a>
               </li>
               <li>
-                <a href="#compte">Compte</a>
+                <a href="/login">Compte</a>
               </li>
             </ul>
           </nav>

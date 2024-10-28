@@ -39,55 +39,59 @@ const AddLocation = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Name:</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+    <main>
+      <div className="content">
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Name:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Description:</label>
+            <textarea
+              type="text"
+              rows="4"
+              cols="50"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Latitude:</label>
+            <input
+              type="number"
+              value={lat}
+              onChange={(e) => setLat(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Longitude:</label>
+            <input
+              type="number"
+              value={lng}
+              onChange={(e) => setLng(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label>Image:</label>
+            <input
+              type="file"
+              onChange={(e) => setImage(e.target.files[0])}
+              required
+            />
+          </div>
+          <button type="submit">Add location</button>
+        </form>
       </div>
-      <div>
-        <label>Description:</label>
-        <textarea
-          type="text"
-          rows="4"
-          cols="50"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Latitude:</label>
-        <input
-          type="number"
-          value={lat}
-          onChange={(e) => setLat(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Longitude:</label>
-        <input
-          type="number"
-          value={lng}
-          onChange={(e) => setLng(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Image:</label>
-        <input
-          type="file"
-          onChange={(e) => setImage(e.target.files[0])}
-          required
-        />
-      </div>
-      <button type="submit">Add location</button>
-    </form>
+    </main>
   );
 };
 

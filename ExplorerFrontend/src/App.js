@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomeGame from "./components/home/HomeGame";
 import AddLocationComponent from "./components/AddFood/AddLocationForm";
 import FooterComponent from "./components/FooterComponent";
+import Login from "./components/login/Login";
 
 class App extends Component {
   constructor(props) {
@@ -17,7 +18,9 @@ class App extends Component {
         <Router>
           <HeaderComponent />
           <Routes>
-            <Route path="/" exact element={<HomeGame />}></Route>
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/game" exact element={<HomeGame />}></Route>
             <Route
               path="/addlocation"
               exact
